@@ -12,8 +12,17 @@ sudo dnf install -y dhcp
 # Configure /etc/dhcp/dhcpd.conf
 
 # Install and configure LDAP server
-sudo dnf install -y openldap-servers openldap-clients
-# Configure slapd.conf or use slapd-config
+sudo dnf install curl -y
+sudo dnf install tar -y
+sudo dnf install gcc -y
+curl -O https://www.openldap.org/software/download/OpenLDAP/openldap-release/openldap-2.5.17.tgz
+gunzip -c openldap-2.5.17.tgz | tar xvfB -
+cd openldap-2.5.17
+./configure
+make depend
+make
+make test
+su root -c 'make install'
 
 # Install and configure firewalld
 sudo dnf install -y firewalld
