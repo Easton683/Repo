@@ -47,5 +47,6 @@ sudo firewall-cmd --zone=public --add-service=ldap --permanent
 sudo firewall-cmd --reload
 
 # Configure auto updates
-sudo dnf install -y dnf-automatic
-sudo systemctl enable --now dnf-automatic.timer
+echo "30 23 * * 3 root dnf update && dnf upgrade -y" > /tmp/auto_updates_cron
+sudo crontab /tmp/auto_updates_cron
+rm /tmp/auto_updates_cron

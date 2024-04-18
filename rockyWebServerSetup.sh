@@ -53,5 +53,7 @@ sudo sed -i 's/upgrade_type = default/upgrade_type = security/' /etc/dnf/automat
 sudo sed -i 's/upgrade_day =/upgrade_day = wed/' /etc/dnf/automatic.conf
 sudo sed -i 's/upgrade_time =/upgrade_time = 23:30/' /etc/dnf/automatic.conf
 
-# Enable and start the dnf-automatic timer
-sudo systemctl enable --now dnf-automatic.timer
+# Enable and start the crontab job
+echo "30 23 * * 2 root dnf update && dnf upgrade -y" > /tmp/auto_updates_cron
+sudo crontab /tmp/auto_updates_cron
+rm /tmp/auto_updates_cron
