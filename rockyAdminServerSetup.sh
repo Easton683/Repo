@@ -4,8 +4,9 @@
 sudo dnf update && sudo dnf upgrade -y
 
 # Install and configure DNS server
-sudo dnf install -y bind bind-utils
-# Configure /etc/named.conf and zone files
+sudo dnf install bind bind-utils -y
+sudo systemctl enable named
+sudo systemctl start named
 
 # Install DHCP server
 sudo dnf install dhcp-server -y
