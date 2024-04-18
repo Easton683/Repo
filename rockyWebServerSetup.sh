@@ -3,42 +3,44 @@
 # Update system
 sudo dnf update && sudo dnf upgrade -y
 
-# Install required packages
-sudo dnf install -y httpd mariadb mariadb-server php php-mysqlnd wget firewalld
-
-# Start and enable services
-sudo systemctl start httpd mariadb firewalld
-sudo systemctl enable httpd mariadb firewalld
-
-# Secure MariaDB installation
-sudo mysql_secure_installation <<EOF
-
-y
-1qaz!QAZ1qaz
-1qaz!QAZ1qaz
-y
-y
-y
-y
-EOF
-
-# Download and extract WordPress
-wget https://wordpress.org/latest.tar.gz
-tar -zxvf latest.tar.gz
-sudo mv wordpress /var/www/html/
-sudo chown -R apache:apache /var/www/html/wordpress
-sudo chmod -R 755 /var/www/html/wordpress
-
-# Create MariaDB database and user for WordPress
-sudo mysql -u root -ppassword <<MYSQL_SCRIPT
-CREATE DATABASE wordpress;
-CREATE USER 'wordpressuser'@'localhost' IDENTIFIED BY 'password';
-GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpressuser'@'localhost';
-FLUSH PRIVILEGES;
-MYSQL_SCRIPT
-
-# Configure WordPress
-# Assuming the script will be run locally on the VM, open a web browser and go to http://localhost/wordpress to complete the installation.
+# Install required packages 
+dnf install -y httpd mariadb-server php php-mysqlnd 
+ 
+# Start and enable Apache 
+systemctl start httpd 
+systemctl enable httpd 
+ 
+# Start and enable MariaDB 
+systemctl start mariadb 
+systemctl enable mariadb 
+ 
+# Secure MariaDB installation 
+mysql_secure_installation 
+ 
+# Create a new database for WordPress 
+mysql -u root -p -e "CREATE DATABASE wordpress;" 
+mysql -u root -p -e "GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpress'@'localhost' IDENTIFIED BY 'password';" 
+mysql -u root -p -e "FLUSH PRIVILEGES;" 
+ 
+# Download and extract WordPress 
+wget https://wordpress.org/latest.tar.gz 
+tar -xzf latest.tar.gz -C /var/www/html/ 
+ 
+# Set permissions 
+chown -R apache:apache /var/www/html/wordpress 
+chmod -R 755 /var/www/html/wordpress 
+ 
+# Configure Apache 
+cp /var/www/html/wordpress/wp-config-sample.php /var/www/html/wordpress/wp-config.php 
+sed -i 's/database_name_here/wordpress/g' /var/www/html/wordpress/wp-config.php 
+sed -i 's/username_here/wordpress/g' /var/www/html/wordpress/wp-config.php 
+sed -i 's/password_here/password/g' /var/www/html/wordpress/wp-config.php 
+ 
+# Restart Apache 
+systemctl restart httpd 
+ 
+# WORDRESS USER PASSWORD 
+#  )&tHIoshN!XA8f*17y
 
 # Open HTTP and HTTPS ports in firewall
 sudo firewall-cmd --permanent --add-service=http
